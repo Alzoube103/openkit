@@ -29,10 +29,10 @@ impl WindowControlsStyle {
     pub fn native() -> Self {
         #[cfg(target_os = "macos")]
         return WindowControlsStyle::MacOS;
-        
+
         #[cfg(target_os = "windows")]
         return WindowControlsStyle::Windows;
-        
+
         #[cfg(target_os = "linux")]
         {
             // Try to detect desktop environment
@@ -48,7 +48,7 @@ impl WindowControlsStyle {
             // Default to GNOME style on Linux
             WindowControlsStyle::Gnome
         }
-        
+
         #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]
         WindowControlsStyle::Windows
     }
@@ -292,7 +292,7 @@ impl Window {
     fn get_close_button_rect(&self, title_bar_rect: Rect) -> Rect {
         let size = self.control_button_size();
         let height = self.control_button_height();
-        
+
         match self.controls_style {
             WindowControlsStyle::MacOS => {
                 // Left side, first button (close)
@@ -317,7 +317,7 @@ impl Window {
     fn get_maximize_button_rect(&self, title_bar_rect: Rect) -> Rect {
         let size = self.control_button_size();
         let height = self.control_button_height();
-        
+
         match self.controls_style {
             WindowControlsStyle::MacOS => {
                 // Left side, third button (maximize/zoom)
@@ -341,7 +341,7 @@ impl Window {
     fn get_minimize_button_rect(&self, title_bar_rect: Rect) -> Rect {
         let size = self.control_button_size();
         let height = self.control_button_height();
-        
+
         match self.controls_style {
             WindowControlsStyle::MacOS => {
                 // Left side, second button (minimize)
@@ -373,7 +373,7 @@ impl Window {
         } else {
             theme.colors.muted
         };
-        
+
         let r = theme.radii.lg * theme.typography.base_size;
         let radius = BorderRadius::new(r, r, 0.0, 0.0);
         painter.fill_rounded_rect(title_bar_rect, bg_color, radius);
@@ -421,7 +421,7 @@ impl Window {
         let (close_color, min_color, max_color) = if self.is_active {
             (
                 Color::rgb(1.0, 0.376, 0.341),  // Red
-                Color::rgb(1.0, 0.741, 0.180),  // Yellow  
+                Color::rgb(1.0, 0.741, 0.180),  // Yellow
                 Color::rgb(0.157, 0.804, 0.251), // Green
             )
         } else {
@@ -542,7 +542,7 @@ impl Window {
             painter.draw_text(icon, Point::new(mx - 4.0, my + 5.0), fg_color, font_size);
         }
 
-        // Minimize button  
+        // Minimize button
         if self.minimizable {
             let min_bg = if self.minimize_hovered { hover_bg } else { Color::TRANSPARENT };
             painter.fill_rounded_rect(minimize_rect, min_bg, radius);
@@ -562,7 +562,7 @@ impl Window {
             theme.colors.muted
         };
         let close_fg = if self.close_hovered { Color::WHITE } else { theme.colors.foreground };
-        
+
         painter.fill_rounded_rect(close_rect, close_bg, radius);
         let cx = close_rect.x() + close_rect.width() / 2.0;
         let cy = close_rect.y() + close_rect.height() / 2.0;
@@ -572,7 +572,7 @@ impl Window {
     fn paint_title(&self, painter: &mut Painter, title_bar_rect: Rect, ctx: &PaintContext) {
         let theme = ctx.style_ctx.theme;
         let font_size = 13.0;
-        
+
         let text_color = if self.is_active {
             theme.colors.foreground
         } else {
@@ -581,7 +581,7 @@ impl Window {
 
         // Calculate title position
         let title_y = title_bar_rect.y() + (title_bar_rect.height() + font_size * 0.8) / 2.0;
-        
+
         // For macOS, center the title. For others, position after controls or icon
         let title_x = match self.controls_style {
             WindowControlsStyle::MacOS => {
@@ -592,13 +592,13 @@ impl Window {
             _ => {
                 // Left side with padding
                 let mut x = title_bar_rect.x() + 12.0;
-                
+
                 // Add icon if present
                 if let Some(ref icon) = self.icon {
                     painter.draw_text(icon, Point::new(x, title_y), text_color, font_size);
                     x += font_size + 8.0;
                 }
-                
+
                 x
             }
         };
@@ -636,7 +636,7 @@ impl Widget for Window {
 
     fn intrinsic_size(&self, ctx: &LayoutContext) -> Size {
         let title_bar_height = self.get_title_bar_height();
-        
+
         let content_size = if let Some(content) = &self.content {
             content.intrinsic_size(ctx)
         } else {
@@ -648,7 +648,7 @@ impl Widget for Window {
 
     fn layout(&mut self, constraints: Constraints, ctx: &LayoutContext) -> LayoutResult {
         let title_bar_height = self.get_title_bar_height();
-        
+
         // Layout content
         let content_constraints = Constraints {
             min_width: constraints.min_width,
@@ -674,7 +674,7 @@ impl Widget for Window {
             content_size.width,
             content_size.height + title_bar_height,
         );
-        
+
         self.base.bounds.size = size;
         LayoutResult::new(size)
     }
@@ -712,7 +712,7 @@ impl Widget for Window {
                 rect.width(),
                 rect.height() - title_bar_height,
             );
-            
+
             // Clip to content area and paint
             content.paint(painter, content_rect, ctx);
         }
@@ -747,9 +747,9 @@ impl Widget for Window {
                         self.minimize_hovered = in_minimize;
                         self.maximize_hovered = in_maximize;
 
-                        if old_close != self.close_hovered 
-                            || old_min != self.minimize_hovered 
-                            || old_max != self.maximize_hovered 
+                        if old_close != self.close_hovered
+                            || old_min != self.minimize_hovered
+                            || old_max != self.maximize_hovered
                         {
                             ctx.request_redraw();
                         }
@@ -811,7 +811,7 @@ impl Widget for Window {
 
     fn set_bounds(&mut self, bounds: Rect) {
         self.base.bounds = bounds;
-        
+
         // Update content bounds
         let title_bar_height = self.get_title_bar_height();
         if let Some(content) = &mut self.content {
