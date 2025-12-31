@@ -274,7 +274,7 @@ impl Widget for Tabs {
     fn intrinsic_size(&self, ctx: &LayoutContext) -> Size {
         let tabs_width: f32 = self.tabs.iter().map(|t| self.calculate_tab_width(t)).sum();
         let content_size = self.content.as_ref().map(|c| c.intrinsic_size(ctx)).unwrap_or(Size::ZERO);
-        
+
         Size::new(
             tabs_width.max(content_size.width),
             self.tab_height + content_size.height,
@@ -447,7 +447,7 @@ impl Widget for Tabs {
                             let tab = &self.tabs[index];
                             let new_hovered = Some(tab.id.clone());
                             let new_close = if in_close { Some(tab.id.clone()) } else { None };
-                            
+
                             if new_hovered != self.hovered_tab || new_close != self.hovered_close {
                                 self.hovered_tab = new_hovered;
                                 self.hovered_close = new_close;

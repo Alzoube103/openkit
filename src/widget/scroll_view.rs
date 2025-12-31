@@ -170,7 +170,7 @@ impl ScrollView {
         let track = self.vertical_scrollbar_rect();
         let content_height = self.content_size.height;
         let viewport_height = self.viewport_height();
-        
+
         if content_height <= viewport_height {
             return Rect::new(track.x(), track.y(), track.width(), track.height());
         }
@@ -222,7 +222,7 @@ impl Widget for ScrollView {
         // Calculate our size with max constraints
         let max_w = self.max_width.unwrap_or(constraints.max_width);
         let max_h = self.max_height.unwrap_or(constraints.max_height);
-        
+
         // Layout content with unlimited space in scroll direction
         if let Some(content) = &mut self.content {
             let content_constraints = Constraints {
@@ -231,7 +231,7 @@ impl Widget for ScrollView {
                 max_width: if self.horizontal_scroll != ScrollBarVisibility::Hidden { f32::MAX } else { max_w },
                 max_height: if self.vertical_scroll != ScrollBarVisibility::Hidden { f32::MAX } else { max_h },
             };
-            
+
             let result = content.layout(content_constraints, ctx);
             self.content_size = result.size;
         }
@@ -243,7 +243,7 @@ impl Widget for ScrollView {
         );
         self.base.bounds.size = size;
         self.clamp_scroll();
-        
+
         LayoutResult::new(size)
     }
 
@@ -261,7 +261,7 @@ impl Widget for ScrollView {
                 self.viewport_width(),
                 self.viewport_height(),
             );
-            
+
             // Offset content by scroll position
             let content_rect = Rect::new(
                 rect.x() - self.scroll_x,
@@ -269,7 +269,7 @@ impl Widget for ScrollView {
                 self.content_size.width,
                 self.content_size.height,
             );
-            
+
             content.paint(painter, content_rect, ctx);
         }
 
@@ -277,7 +277,7 @@ impl Widget for ScrollView {
         if self.should_show_vertical_scrollbar() {
             let track = self.vertical_scrollbar_rect();
             painter.fill_rect(track, theme.colors.muted.with_alpha(0.3));
-            
+
             let thumb = self.vertical_thumb_rect();
             let thumb_color = if self.dragging_scrollbar {
                 theme.colors.muted_foreground
@@ -304,7 +304,7 @@ impl Widget for ScrollView {
                             let track = self.vertical_scrollbar_rect();
                             let thumb_height = self.vertical_thumb_rect().height();
                             let max_thumb_travel = track.height() - thumb_height;
-                            
+
                             if max_thumb_travel > 0.0 {
                                 let delta_y = mouse.position.y - self.drag_start_y;
                                 let scroll_ratio = delta_y / max_thumb_travel;
@@ -364,7 +364,7 @@ impl Widget for ScrollView {
 
     fn set_bounds(&mut self, bounds: Rect) {
         self.base.bounds = bounds;
-        
+
         if let Some(content) = &mut self.content {
             content.set_bounds(Rect::new(
                 bounds.x() - self.scroll_x,

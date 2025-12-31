@@ -239,7 +239,7 @@ impl Widget for SystemTray {
                 let badge_size = 12.0;
                 let badge_x = icon_rect.x() + icon_rect.width() - badge_size / 2.0;
                 let badge_y = icon_rect.y() - badge_size / 4.0;
-                
+
                 painter.fill_rect(
                     Rect::new(badge_x, badge_y, badge_size, badge_size),
                     theme.colors.destructive,
@@ -265,7 +265,7 @@ impl Widget for SystemTray {
                     MouseEventKind::Move => {
                         let new_hovered = self.icon_at_point(mouse.position)
                             .map(|i| self.icons[i].id.clone());
-                        
+
                         if new_hovered != self.hovered_icon {
                             self.hovered_icon = new_hovered;
                             ctx.request_redraw();

@@ -193,7 +193,7 @@ impl Widget for Progress {
 
         // Fill
         let fill_color = self.color.unwrap_or(theme.colors.primary);
-        
+
         match self.variant {
             ProgressVariant::Linear | ProgressVariant::Striped => {
                 let fill_width = bar_rect.width() * self.value;

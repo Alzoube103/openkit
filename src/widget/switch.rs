@@ -148,13 +148,13 @@ impl ToggleSwitch {
     fn thumb_rect(&self, track: Rect) -> Rect {
         let thumb_size = self.size.thumb_size();
         let padding = (track.height() - thumb_size) / 2.0;
-        
+
         let x = if self.checked {
             track.x() + track.width() - thumb_size - padding
         } else {
             track.x() + padding
         };
-        
+
         Rect::new(x, track.y() + padding, thumb_size, thumb_size)
     }
 }
@@ -221,7 +221,7 @@ impl Widget for ToggleSwitch {
         // Thumb
         let thumb = self.thumb_rect(track);
         let thumb_radius = BorderRadius::all(thumb.height() / 2.0);
-        
+
         // Thumb shadow
         if !self.disabled {
             let shadow_rect = Rect::new(thumb.x() + 1.0, thumb.y() + 2.0, thumb.width(), thumb.height());
@@ -240,13 +240,13 @@ impl Widget for ToggleSwitch {
             let (switch_width, switch_height) = self.size.dimensions();
             let label_x = rect.x() + switch_width + 12.0;
             let label_y = rect.y() + (rect.height() + 12.0) / 2.0;
-            
+
             let label_color = if self.disabled {
                 theme.colors.muted_foreground
             } else {
                 theme.colors.foreground
             };
-            
+
             painter.draw_text(label, Point::new(label_x, label_y), label_color, 14.0);
         }
 

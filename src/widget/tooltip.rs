@@ -101,7 +101,7 @@ impl Tooltip {
     fn calculate_tooltip_rect(&self) -> Rect {
         let padding = 8.0;
         let font_size = 12.0;
-        
+
         // Simple width calculation (would need proper text measurement)
         let text_width = (self.text.len() as f32 * font_size * 0.55).min(self.max_width);
         let width = text_width + padding * 2.0;
@@ -191,7 +191,7 @@ impl Widget for Tooltip {
         // Arrow/pointer (simplified - just a small triangle indicator)
         let arrow_size = 6.0;
         let arrow_color = theme.colors.popover;
-        
+
         match self.position {
             TooltipPosition::Top => {
                 // Arrow pointing down

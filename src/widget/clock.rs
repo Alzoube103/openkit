@@ -118,7 +118,7 @@ impl Clock {
     pub fn update(&mut self) {
         // In a real implementation, this would get the current system time
         // For now, we'll use placeholder values
-        
+
         // Get current time from system
         let now = std::time::SystemTime::now();
         if let Ok(duration) = now.duration_since(std::time::UNIX_EPOCH) {
@@ -126,7 +126,7 @@ impl Clock {
             let hours = ((secs / 3600) % 24) as u32;
             let minutes = ((secs / 60) % 60) as u32;
             let seconds = (secs % 60) as u32;
-            
+
             self.cached_time = match self.format {
                 ClockFormat::TwelveHour => {
                     let (h, ampm) = if hours == 0 {
@@ -138,7 +138,7 @@ impl Clock {
                     } else {
                         (hours - 12, "PM")
                     };
-                    
+
                     if self.show_seconds {
                         format!("{}:{:02}:{:02} {}", h, minutes, seconds, ampm)
                     } else {
@@ -153,16 +153,16 @@ impl Clock {
                     }
                 }
             };
-            
+
             // Simplified date - in real implementation would use proper date formatting
             let days = secs / 86400;
-            let month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+            let month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             let day_names = ["Thu", "Fri", "Sat", "Sun", "Mon", "Tue", "Wed"];
             let day_of_week = day_names[(days % 7) as usize];
             let month = month_names[((days / 30) % 12) as usize];
             let day_of_month = (days % 30) + 1;
-            
+
             self.cached_date = match self.date_format {
                 DateFormat::Short => format!("{} {}", month, day_of_month),
                 DateFormat::Long => format!("{} {}, 2024", month, day_of_month),
@@ -234,7 +234,7 @@ impl Widget for Clock {
                 theme.colors.foreground,
                 14.0,
             );
-            
+
             // Date
             let date_width = self.cached_date.len() as f32 * 6.0;
             painter.draw_text(
@@ -259,7 +259,7 @@ impl Widget for Clock {
         match event {
             Event::Mouse(mouse) => {
                 let in_bounds = self.bounds().contains(mouse.position);
-                
+
                 match mouse.kind {
                     MouseEventKind::Move | MouseEventKind::Enter => {
                         if in_bounds && !self.base.state.hovered && self.on_click.is_some() {

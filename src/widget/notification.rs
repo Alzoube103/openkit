@@ -294,7 +294,7 @@ impl Widget for Notification {
                 } else {
                     theme.colors.secondary_foreground
                 };
-                
+
                 let btn_radius = BorderRadius::all(theme.radii.sm * theme.typography.base_size);
                 painter.fill_rounded_rect(*rect, bg_color, btn_radius);
                 painter.draw_text(
@@ -335,7 +335,7 @@ impl Widget for Notification {
                             }
                             return EventResult::Handled;
                         }
-                        
+
                         if let Some(action_idx) = in_action {
                             if let Some((id, _)) = self.actions.get(action_idx) {
                                 let id = id.clone();

@@ -224,7 +224,7 @@ impl ListView {
 
         let relative_y = point.y - self.base.bounds.y() + self.scroll_offset;
         let index = (relative_y / self.item_height) as usize;
-        
+
         if index < self.items.len() {
             Some(index)
         } else {

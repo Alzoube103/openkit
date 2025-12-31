@@ -88,7 +88,7 @@ pub mod prelude {
     pub use crate::widget::clock::{Clock, ClockFormat, DateFormat};
     pub use crate::widget::container::{Column, Row};
     pub use crate::widget::context_menu::{ContextMenu, MenuItem};
-    pub use crate::widget::desktop::{Desktop, DesktopIcon};
+    pub use crate::widget::desktop::{Desktop, DesktopIcon, Wallpaper, WallpaperMode, GradientDirection};
     pub use crate::widget::dropdown::{Dropdown, DropdownOption};
     pub use crate::widget::icon_button::{IconButton, IconButtonSize, IconButtonVariant};
     pub use crate::widget::label::Label;

@@ -20,11 +20,11 @@ impl WorkspaceItem {
     pub fn new(id: impl Into<String>) -> Self {
         Self { id: id.into(), name: None, thumbnail: None, window_count: 0 }
     }
-    
+
     pub fn name(mut self, name: impl Into<String>) -> Self {
         self.name = Some(name.into()); self
     }
-    
+
     pub fn windows(mut self, count: usize) -> Self {
         self.window_count = count; self
     }
@@ -107,7 +107,7 @@ impl Widget for WorkspaceSwitcher {
                 else if hovered { theme.colors.accent.with_alpha(0.3) }
                 else { theme.colors.muted };
             painter.fill_rounded_rect(r, bg, radius);
-            
+
             if active { painter.stroke_rect(r, theme.colors.ring, 2.0); }
 
             let num = format!("{}", i + 1);

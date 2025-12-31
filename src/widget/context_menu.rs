@@ -203,7 +203,7 @@ impl ContextMenu {
             } else {
                 Self::item_height()
             };
-            
+
             if i == index {
                 return Rect::new(self.position.x, y, Self::menu_width(), height);
             }
@@ -384,7 +384,7 @@ impl Widget for ContextMenu {
                                 } else {
                                     Self::item_height()
                                 };
-                                
+
                                 if mouse.position.y >= y && mouse.position.y < y + height {
                                     if !item.separator && self.hovered_index != Some(i) {
                                         self.hovered_index = Some(i);

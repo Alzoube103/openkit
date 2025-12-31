@@ -155,7 +155,7 @@ impl Slider {
             return 0.0;
         }
         let ratio = (self.value - self.min) / range;
-        
+
         match self.orientation {
             SliderOrientation::Horizontal => {
                 rect.x() + ratio * (rect.width() - 16.0) + 8.0
@@ -204,7 +204,7 @@ impl Slider {
     fn thumb_rect(&self, rect: Rect) -> Rect {
         let thumb_size = 16.0;
         let pos = self.value_to_position(rect);
-        
+
         match self.orientation {
             SliderOrientation::Horizontal => {
                 Rect::new(
@@ -304,13 +304,13 @@ impl Widget for Slider {
         } else {
             theme.colors.primary
         };
-        
+
         // Thumb shadow
         if !self.disabled {
             let shadow_rect = Rect::new(thumb.x() + 1.0, thumb.y() + 2.0, thumb.width(), thumb.height());
             painter.fill_rounded_rect(shadow_rect, Color::BLACK.with_alpha(0.2), thumb_radius);
         }
-        
+
         painter.fill_rounded_rect(thumb, thumb_color, thumb_radius);
 
         // Value display
@@ -363,7 +363,7 @@ impl Widget for Slider {
                             ctx.request_redraw();
                             return EventResult::Handled;
                         }
-                        
+
                         if (in_bounds || in_thumb) && !self.base.state.hovered {
                             self.base.state.hovered = true;
                             ctx.request_redraw();
