@@ -93,6 +93,7 @@ pub mod prelude {
     pub use crate::widget::spacer::Spacer;
     pub use crate::widget::spinner::{Spinner, SpinnerSize};
     pub use crate::widget::textfield::TextField;
+    pub use crate::widget::window::{Window, WindowVariant, WindowControlsStyle};
 
     // Component system (Angular-like)
     pub use crate::component::{

@@ -298,7 +298,7 @@ impl Widget for Bar {
 
     fn layout(&mut self, constraints: Constraints, ctx: &LayoutContext) -> LayoutResult {
         let margin = self.get_margin();
-        
+
         let size = if self.position.is_horizontal() {
             Size::new(
                 constraints.max_width,
@@ -498,7 +498,7 @@ impl Bar {
                 max_height: content_height,
             };
             let result = center.layout(center_constraints, ctx);
-            
+
             // Center horizontally
             let center_x = content_rect.x() + (available_width - result.size.width) / 2.0;
             center.set_bounds(Rect::new(
@@ -559,7 +559,7 @@ impl Bar {
                 max_height: available_height - start_height - end_height - self.gap * 2.0,
             };
             let result = center.layout(center_constraints, ctx);
-            
+
             // Center vertically
             let center_y = content_rect.y() + (available_height - result.size.height) / 2.0;
             center.set_bounds(Rect::new(

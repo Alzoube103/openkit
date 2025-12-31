@@ -13,6 +13,7 @@ pub mod password_field;
 pub mod spacer;
 pub mod spinner;
 pub mod textfield;
+pub mod window;
 
 use crate::css::{ClassList, ComputedStyle, StyleContext, WidgetState};
 use crate::event::{Event, EventResult, MouseEvent};
