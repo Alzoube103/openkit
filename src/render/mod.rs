@@ -1,0 +1,415 @@
+//! Rendering engine for OpenKit.
+//!
+//! Provides GPU-accelerated rendering using wgpu with a CPU fallback using tiny-skia.
+
+mod painter;
+mod text;
+
+pub use painter::{Painter, DrawCommand};
+pub use text::TextRenderer;
+
+use crate::geometry::{Color, Point, Rect, Size, BorderRadius};
+use crate::platform::Window;
+use crate::theme::ThemeData;
+
+use std::sync::Arc;
+
+#[cfg(feature = "gpu")]
+use wgpu;
+
+/// The main renderer.
+pub struct Renderer {
+    #[cfg(feature = "gpu")]
+    gpu: Option<GpuRenderer>,
+    cpu: CpuRenderer,
+    text: TextRenderer,
+}
+
+impl Renderer {
+    /// Create a new renderer for a window.
+    pub fn new(window: &Window) -> Self {
+        #[cfg(feature = "gpu")]
+        let gpu = GpuRenderer::new(window).ok();
+
+        Self {
+            #[cfg(feature = "gpu")]
+            gpu,
+            cpu: CpuRenderer::new(),
+            text: TextRenderer::new(),
+        }
+    }
+
+    /// Resize the renderer.
+    pub fn resize(&mut self, size: Size) {
+        #[cfg(feature = "gpu")]
+        if let Some(gpu) = &mut self.gpu {
+            gpu.resize(size);
+        }
+        self.cpu.resize(size);
+    }
+
+    /// Begin a new frame.
+    pub fn begin_frame(&mut self, background: Color) {
+        #[cfg(feature = "gpu")]
+        if let Some(gpu) = &mut self.gpu {
+            gpu.begin_frame(background);
+            return;
+        }
+        self.cpu.begin_frame(background);
+    }
+
+    /// End the frame and present.
+    pub fn end_frame(&mut self) {
+        #[cfg(feature = "gpu")]
+        if let Some(gpu) = &mut self.gpu {
+            gpu.end_frame();
+            return;
+        }
+        self.cpu.end_frame();
+    }
+
+    /// Get a painter for drawing.
+    pub fn painter(&mut self) -> Painter {
+        Painter::new()
+    }
+
+    /// Execute draw commands.
+    pub fn draw(&mut self, commands: &[DrawCommand]) {
+        for cmd in commands {
+            match cmd {
+                DrawCommand::Rect { rect, color, radius } => {
+                    self.draw_rect(*rect, *color, *radius);
+                }
+                DrawCommand::Text { text, position, color, size } => {
+                    self.draw_text(text, *position, *color, *size);
+                }
+                DrawCommand::Line { from, to, color, width } => {
+                    self.draw_line(*from, *to, *color, *width);
+                }
+                DrawCommand::Image { rect, .. } => {
+                    // TODO: Image rendering
+                    self.draw_rect(*rect, Color::from_rgb8(200, 200, 200), BorderRadius::ZERO);
+                }
+            }
+        }
+    }
+
+    /// Draw a filled rectangle.
+    pub fn draw_rect(&mut self, rect: Rect, color: Color, radius: BorderRadius) {
+        #[cfg(feature = "gpu")]
+        if self.gpu.is_some() {
+            // GPU path - would use wgpu
+            return;
+        }
+        self.cpu.draw_rect(rect, color, radius);
+    }
+
+    /// Draw text.
+    pub fn draw_text(&mut self, text: &str, position: Point, color: Color, size: f32) {
+        #[cfg(feature = "gpu")]
+        if self.gpu.is_some() {
+            // GPU path
+            return;
+        }
+        self.cpu.draw_text(text, position, color, size, &self.text);
+    }
+
+    /// Draw a line.
+    pub fn draw_line(&mut self, from: Point, to: Point, color: Color, width: f32) {
+        #[cfg(feature = "gpu")]
+        if self.gpu.is_some() {
+            return;
+        }
+        self.cpu.draw_line(from, to, color, width);
+    }
+
+    /// Measure text size.
+    pub fn measure_text(&self, text: &str, size: f32) -> Size {
+        self.text.measure(text, size)
+    }
+
+    /// Get the pixel buffer for software rendering (for presenting to window).
+    pub fn pixels(&self) -> Option<&[u8]> {
+        Some(self.cpu.pixels())
+    }
+}
+
+/// GPU renderer using wgpu.
+#[cfg(feature = "gpu")]
+pub struct GpuRenderer {
+    surface: wgpu::Surface<'static>,
+    device: wgpu::Device,
+    queue: wgpu::Queue,
+    config: wgpu::SurfaceConfiguration,
+    size: Size,
+}
+
+#[cfg(feature = "gpu")]
+impl GpuRenderer {
+    pub fn new(window: &Window) -> Result<Self, RenderError> {
+        let size = window.size();
+
+        let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
+            backends: wgpu::Backends::all(),
+            ..Default::default()
+        });
+
+        // Create surface
+        let surface = instance
+            .create_surface(window.inner_arc())
+            .map_err(|e| RenderError::SurfaceCreation(e.to_string()))?;
+
+        // Get adapter
+        let adapter = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
+            power_preference: wgpu::PowerPreference::default(),
+            compatible_surface: Some(&surface),
+            force_fallback_adapter: false,
+        }))
+        .ok_or(RenderError::NoAdapter)?;
+
+        // Get device and queue
+        let (device, queue) = pollster::block_on(adapter.request_device(
+            &wgpu::DeviceDescriptor {
+                label: Some("OpenKit Device"),
+                required_features: wgpu::Features::empty(),
+                required_limits: wgpu::Limits::default(),
+                memory_hints: wgpu::MemoryHints::default(),
+            },
+            None,
+        ))
+        .map_err(|e| RenderError::DeviceCreation(e.to_string()))?;
+
+        // Configure surface
+        let surface_caps = surface.get_capabilities(&adapter);
+        let surface_format = surface_caps
+            .formats
+            .iter()
+            .copied()
+            .find(|f| f.is_srgb())
+            .unwrap_or(surface_caps.formats[0]);
+
+        let config = wgpu::SurfaceConfiguration {
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+            format: surface_format,
+            width: size.width as u32,
+            height: size.height as u32,
+            present_mode: wgpu::PresentMode::Fifo,
+            alpha_mode: surface_caps.alpha_modes[0],
+            view_formats: vec![],
+            desired_maximum_frame_latency: 2,
+        };
+        surface.configure(&device, &config);
+
+        Ok(Self {
+            surface,
+            device,
+            queue,
+            config,
+            size,
+        })
+    }
+
+    pub fn resize(&mut self, size: Size) {
+        if size.width > 0.0 && size.height > 0.0 {
+            self.size = size;
+            self.config.width = size.width as u32;
+            self.config.height = size.height as u32;
+            self.surface.configure(&self.device, &self.config);
+        }
+    }
+
+    pub fn begin_frame(&mut self, background: Color) {
+        // TODO: Start render pass with background clear
+    }
+
+    pub fn end_frame(&mut self) {
+        // TODO: Submit and present
+    }
+}
+
+/// CPU renderer using tiny-skia.
+pub struct CpuRenderer {
+    pixmap: tiny_skia::Pixmap,
+    size: Size,
+}
+
+impl CpuRenderer {
+    pub fn new() -> Self {
+        Self {
+            pixmap: tiny_skia::Pixmap::new(1, 1).unwrap(),
+            size: Size::new(1.0, 1.0),
+        }
+    }
+
+    pub fn resize(&mut self, size: Size) {
+        if size.width > 0.0 && size.height > 0.0 {
+            self.size = size;
+            self.pixmap = tiny_skia::Pixmap::new(size.width as u32, size.height as u32)
+                .unwrap_or_else(|| tiny_skia::Pixmap::new(1, 1).unwrap());
+        }
+    }
+
+    pub fn begin_frame(&mut self, background: Color) {
+        let [r, g, b, a] = background.to_rgba8();
+        self.pixmap.fill(tiny_skia::Color::from_rgba8(r, g, b, a));
+    }
+
+    pub fn end_frame(&mut self) {
+        // Nothing to do for CPU renderer
+    }
+
+    pub fn pixels(&self) -> &[u8] {
+        self.pixmap.data()
+    }
+
+    pub fn draw_rect(&mut self, rect: Rect, color: Color, radius: BorderRadius) {
+        let [r, g, b, a] = color.to_rgba8();
+        let paint = tiny_skia::Paint {
+            shader: tiny_skia::Shader::SolidColor(tiny_skia::Color::from_rgba8(r, g, b, a)),
+            anti_alias: true,
+            ..Default::default()
+        };
+
+        if radius.is_zero() {
+            // Simple rectangle
+            let rect = tiny_skia::Rect::from_xywh(
+                rect.x(),
+                rect.y(),
+                rect.width(),
+                rect.height(),
+            );
+            if let Some(rect) = rect {
+                self.pixmap.fill_rect(rect, &paint, tiny_skia::Transform::identity(), None);
+            }
+        } else {
+            // Rounded rectangle
+            let path = create_rounded_rect_path(rect, radius);
+            self.pixmap.fill_path(&path, &paint, tiny_skia::FillRule::Winding, tiny_skia::Transform::identity(), None);
+        }
+    }
+
+    pub fn draw_line(&mut self, from: Point, to: Point, color: Color, width: f32) {
+        let [r, g, b, a] = color.to_rgba8();
+        let paint = tiny_skia::Paint {
+            shader: tiny_skia::Shader::SolidColor(tiny_skia::Color::from_rgba8(r, g, b, a)),
+            anti_alias: true,
+            ..Default::default()
+        };
+
+        let mut path = tiny_skia::PathBuilder::new();
+        path.move_to(from.x, from.y);
+        path.line_to(to.x, to.y);
+
+        if let Some(path) = path.finish() {
+            let stroke = tiny_skia::Stroke {
+                width,
+                ..Default::default()
+            };
+            self.pixmap.stroke_path(&path, &paint, &stroke, tiny_skia::Transform::identity(), None);
+        }
+    }
+
+    pub fn draw_text(&mut self, text: &str, position: Point, color: Color, size: f32, text_renderer: &TextRenderer) {
+        // Simple text rendering - in production would use cosmic-text for proper glyph rendering
+        // For now, just draw a placeholder
+        let [r, g, b, a] = color.to_rgba8();
+        let paint = tiny_skia::Paint {
+            shader: tiny_skia::Shader::SolidColor(tiny_skia::Color::from_rgba8(r, g, b, a)),
+            anti_alias: true,
+            ..Default::default()
+        };
+
+        // Draw a simple placeholder rectangle for text
+        let text_size = text_renderer.measure(text, size);
+        let rect = tiny_skia::Rect::from_xywh(
+            position.x,
+            position.y - size * 0.8, // Approximate baseline offset
+            text_size.width,
+            text_size.height,
+        );
+
+        // For MVP, we'll render text using cosmic-text's rasterization
+        // This is a simplified placeholder
+        if let Some(rect) = rect {
+            // In a full implementation, we'd rasterize glyphs here
+            // For now, just indicate text area
+        }
+    }
+}
+
+impl Default for CpuRenderer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/// Create a rounded rectangle path.
+fn create_rounded_rect_path(rect: Rect, radius: BorderRadius) -> tiny_skia::Path {
+    let mut pb = tiny_skia::PathBuilder::new();
+
+    let x = rect.x();
+    let y = rect.y();
+    let w = rect.width();
+    let h = rect.height();
+
+    let tl = radius.top_left.min(w / 2.0).min(h / 2.0);
+    let tr = radius.top_right.min(w / 2.0).min(h / 2.0);
+    let br = radius.bottom_right.min(w / 2.0).min(h / 2.0);
+    let bl = radius.bottom_left.min(w / 2.0).min(h / 2.0);
+
+    // Top edge
+    pb.move_to(x + tl, y);
+    pb.line_to(x + w - tr, y);
+
+    // Top right corner
+    if tr > 0.0 {
+        pb.quad_to(x + w, y, x + w, y + tr);
+    }
+
+    // Right edge
+    pb.line_to(x + w, y + h - br);
+
+    // Bottom right corner
+    if br > 0.0 {
+        pb.quad_to(x + w, y + h, x + w - br, y + h);
+    }
+
+    // Bottom edge
+    pb.line_to(x + bl, y + h);
+
+    // Bottom left corner
+    if bl > 0.0 {
+        pb.quad_to(x, y + h, x, y + h - bl);
+    }
+
+    // Left edge
+    pb.line_to(x, y + tl);
+
+    // Top left corner
+    if tl > 0.0 {
+        pb.quad_to(x, y, x + tl, y);
+    }
+
+    pb.close();
+    pb.finish().unwrap_or_else(|| tiny_skia::PathBuilder::new().finish().unwrap())
+}
+
+/// Render error types.
+#[derive(Debug, Clone)]
+pub enum RenderError {
+    SurfaceCreation(String),
+    NoAdapter,
+    DeviceCreation(String),
+}
+
+impl std::fmt::Display for RenderError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            RenderError::SurfaceCreation(e) => write!(f, "Failed to create surface: {}", e),
+            RenderError::NoAdapter => write!(f, "No suitable GPU adapter found"),
+            RenderError::DeviceCreation(e) => write!(f, "Failed to create device: {}", e),
+        }
+    }
+}
+
+impl std::error::Error for RenderError {}

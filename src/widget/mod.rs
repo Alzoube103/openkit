@@ -1,0 +1,196 @@
+//! Widget system for OpenKit.
+
+pub mod button;
+pub mod checkbox;
+pub mod container;
+pub mod label;
+pub mod textfield;
+
+use crate::css::{ClassList, ComputedStyle, StyleContext, WidgetState};
+use crate::event::{Event, EventResult, MouseEvent};
+use crate::geometry::{Point, Rect, Size};
+use crate::layout::{Constraints, LayoutResult};
+use crate::render::Painter;
+
+use std::sync::atomic::{AtomicU64, Ordering};
+
+/// Unique widget identifier.
+pub type WidgetId = u64;
+
+/// Global widget ID counter.
+static WIDGET_ID_COUNTER: AtomicU64 = AtomicU64::new(1);
+
+/// Generate a new unique widget ID.
+pub fn next_widget_id() -> WidgetId {
+    WIDGET_ID_COUNTER.fetch_add(1, Ordering::SeqCst)
+}
+
+/// Base widget trait.
+pub trait Widget {
+    /// Get the widget's unique ID.
+    fn id(&self) -> WidgetId;
+
+    /// Get the widget type name (for CSS type selectors).
+    fn type_name(&self) -> &'static str;
+
+    /// Get the widget's element ID (for CSS #id selectors).
+    fn element_id(&self) -> Option<&str> {
+        None
+    }
+
+    /// Get the widget's CSS classes.
+    fn classes(&self) -> &ClassList;
+
+    /// Get the widget's current state.
+    fn state(&self) -> WidgetState;
+
+    /// Calculate the intrinsic size of this widget.
+    fn intrinsic_size(&self, ctx: &LayoutContext) -> Size;
+
+    /// Perform layout with constraints.
+    fn layout(&mut self, constraints: Constraints, ctx: &LayoutContext) -> LayoutResult;
+
+    /// Paint the widget.
+    fn paint(&self, painter: &mut Painter, rect: Rect, ctx: &PaintContext);
+
+    /// Handle an event.
+    fn handle_event(&mut self, event: &Event, ctx: &mut EventContext) -> EventResult {
+        EventResult::Ignored
+    }
+
+    /// Get the computed style for this widget.
+    fn style(&self, ctx: &StyleContext) -> ComputedStyle {
+        ComputedStyle::default()
+    }
+
+    /// Get the bounds of this widget after layout.
+    fn bounds(&self) -> Rect;
+
+    /// Set the bounds of this widget.
+    fn set_bounds(&mut self, bounds: Rect);
+
+    /// Check if this widget contains a point.
+    fn hit_test(&self, point: Point) -> bool {
+        self.bounds().contains(point)
+    }
+
+    /// Get children (for container widgets).
+    fn children(&self) -> &[Box<dyn Widget>] {
+        &[]
+    }
+
+    /// Get mutable children.
+    fn children_mut(&mut self) -> &mut [Box<dyn Widget>] {
+        &mut []
+    }
+}
+
+/// Context for layout operations.
+pub struct LayoutContext<'a> {
+    pub style_ctx: &'a StyleContext<'a>,
+    pub scale_factor: f32,
+}
+
+impl<'a> LayoutContext<'a> {
+    pub fn new(style_ctx: &'a StyleContext<'a>) -> Self {
+        Self {
+            style_ctx,
+            scale_factor: 1.0,
+        }
+    }
+
+    pub fn with_scale(mut self, scale: f32) -> Self {
+        self.scale_factor = scale;
+        self
+    }
+}
+
+/// Context for paint operations.
+pub struct PaintContext<'a> {
+    pub style_ctx: &'a StyleContext<'a>,
+    pub scale_factor: f32,
+    pub focus_visible: bool,
+}
+
+impl<'a> PaintContext<'a> {
+    pub fn new(style_ctx: &'a StyleContext<'a>) -> Self {
+        Self {
+            style_ctx,
+            scale_factor: 1.0,
+            focus_visible: false,
+        }
+    }
+}
+
+/// Context for event handling.
+pub struct EventContext {
+    pub focus: Option<WidgetId>,
+    pub mouse_position: Point,
+    pub should_redraw: bool,
+}
+
+impl EventContext {
+    pub fn new() -> Self {
+        Self {
+            focus: None,
+            mouse_position: Point::ZERO,
+            should_redraw: false,
+        }
+    }
+
+    pub fn request_focus(&mut self, widget_id: WidgetId) {
+        self.focus = Some(widget_id);
+    }
+
+    pub fn release_focus(&mut self) {
+        self.focus = None;
+    }
+
+    pub fn request_redraw(&mut self) {
+        self.should_redraw = true;
+    }
+}
+
+impl Default for EventContext {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/// Base struct containing common widget fields.
+#[derive(Debug)]
+pub struct WidgetBase {
+    pub id: WidgetId,
+    pub element_id: Option<String>,
+    pub classes: ClassList,
+    pub bounds: Rect,
+    pub state: WidgetState,
+}
+
+impl WidgetBase {
+    pub fn new() -> Self {
+        Self {
+            id: next_widget_id(),
+            element_id: None,
+            classes: ClassList::new(),
+            bounds: Rect::ZERO,
+            state: WidgetState::default(),
+        }
+    }
+
+    pub fn with_class(mut self, class: &str) -> Self {
+        self.classes.add(class);
+        self
+    }
+
+    pub fn with_id(mut self, id: &str) -> Self {
+        self.element_id = Some(id.to_string());
+        self
+    }
+}
+
+impl Default for WidgetBase {
+    fn default() -> Self {
+        Self::new()
+    }
+}

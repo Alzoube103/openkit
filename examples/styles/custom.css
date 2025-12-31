@@ -1,0 +1,241 @@
+/* Custom OpenKit Stylesheet Example
+ * Load this file with: styles.load_file("./examples/styles/custom.css")
+ */
+
+/* ============================================================================
+ * Custom CSS Variables
+ * Override the default design tokens
+ * ============================================================================ */
+
+:root {
+  /* Custom color scheme - Indigo/Purple */
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #1e293b;
+
+  /* Custom accent colors */
+  --accent: #f59e0b;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  /* Custom borders and shadows */
+  --border: #e2e8f0;
+  --ring: #6366f1;
+
+  /* Custom radius for rounder UI */
+  --radius-sm: 0.25rem;
+  --radius: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+}
+
+/* Dark theme overrides */
+:root.dark {
+  --primary: #818cf8;
+  --primary-foreground: #1e1b4b;
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+  --accent: #fbbf24;
+  --border: #334155;
+}
+
+/* ============================================================================
+ * Custom Button Styles
+ * ============================================================================ */
+
+/* Pill-shaped buttons */
+.btn-pill {
+  border-radius: var(--radius-full);
+  padding: 8px 24px;
+}
+
+/* Large CTA button */
+.btn-cta {
+  background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+  color: white;
+  padding: 16px 32px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 10px 40px -10px rgba(99, 102, 241, 0.5);
+}
+
+.btn-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 44px -10px rgba(99, 102, 241, 0.6);
+}
+
+/* Icon button */
+.btn-icon-only {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Success button */
+.btn-success {
+  background-color: #22c55e;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #16a34a;
+}
+
+/* Warning button */
+.btn-warning {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.btn-warning:hover {
+  background-color: #d97706;
+}
+
+/* ============================================================================
+ * Custom Card Styles
+ * ============================================================================ */
+
+/* Elevated card with more shadow */
+.card-elevated {
+  background-color: var(--card);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+              0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border);
+}
+
+/* Glass effect card */
+.card-glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+}
+
+/* Bordered card */
+.card-bordered {
+  background: transparent;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+/* ============================================================================
+ * Custom Input Styles
+ * ============================================================================ */
+
+/* Underlined input */
+.input-underline {
+  border: none;
+  border-bottom: 2px solid var(--border);
+  border-radius: 0;
+  padding: 8px 0;
+  background: transparent;
+}
+
+.input-underline:focus {
+  border-bottom-color: var(--primary);
+  box-shadow: none;
+}
+
+/* Large input */
+.input-lg {
+  padding: 16px 20px;
+  font-size: 1.125rem;
+  border-radius: var(--radius-lg);
+}
+
+/* Search input with icon space */
+.input-search {
+  padding-left: 40px;
+  border-radius: var(--radius-full);
+}
+
+/* ============================================================================
+ * Typography Utilities
+ * ============================================================================ */
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary), #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-hero {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.text-display {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.text-caption {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================================================
+ * Layout Utilities
+ * ============================================================================ */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section {
+  padding: 48px 0;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--border);
+  margin: 24px 0;
+}
+
+/* ============================================================================
+ * Animation Classes
+ * ============================================================================ */
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}

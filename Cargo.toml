@@ -1,0 +1,76 @@
+[package]
+name = "openkit"
+version = "0.1.0"
+edition = "2021"
+description = "A cross-platform CSS-styled UI framework for Rust"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/PegasusHeavyIndustries/openkit"
+keywords = ["gui", "ui", "css", "cross-platform", "desktop"]
+categories = ["gui", "rendering"]
+
+[features]
+default = ["gpu"]
+gpu = ["wgpu"]
+
+[dependencies]
+# Windowing
+winit = "0.30"
+
+# GPU Rendering (optional, enabled by default)
+wgpu = { version = "23", optional = true }
+
+# CPU Rendering fallback
+tiny-skia = "0.11"
+
+# Text rendering
+cosmic-text = "0.12"
+
+# CSS parsing
+cssparser = "0.34"
+
+# Image loading
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp"] }
+
+# Color handling
+palette = "0.7"
+
+# Logging
+log = "0.4"
+env_logger = "0.11"
+
+# Error handling
+thiserror = "2"
+
+# Async runtime for wgpu
+pollster = "0.4"
+
+# Raw window handle for wgpu integration
+raw-window-handle = "0.6"
+
+# Ordered float for CSS values
+ordered-float = "4"
+
+# Smallvec for performance
+smallvec = "1"
+
+# Unicode segmentation for text
+unicode-segmentation = "1"
+
+[dev-dependencies]
+pretty_assertions = "1"
+
+[[example]]
+name = "hello_world"
+path = "examples/hello_world.rs"
+
+[[example]]
+name = "theme_toggle"
+path = "examples/theme_toggle.rs"
+
+[[example]]
+name = "angular_style"
+path = "examples/angular_style.rs"
+
+[[example]]
+name = "custom_css"
+path = "examples/custom_css.rs"

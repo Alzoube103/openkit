@@ -1,0 +1,5 @@
+# Build artifacts
+/target
+
+# Cargo lock file (auto-generated)
+Cargo.lock

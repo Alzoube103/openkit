@@ -1,0 +1,103 @@
+/* OpenKit Default Styles
+ * These are the framework's base styles that can be overridden by custom CSS.
+ * Note: CSS variables and complex selectors are applied programmatically by the theme system.
+ */
+
+/* Button base styles */
+.button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.btn-primary {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border-width: 1px;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: #0f172a;
+}
+
+.btn-destructive {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+/* Label styles */
+.label {
+  font-size: 16px;
+  color: #0f172a;
+}
+
+.label-sm {
+  font-size: 14px;
+}
+
+.label-lg {
+  font-size: 18px;
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* TextField styles */
+.textfield {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-width: 1px;
+  border-color: #e2e8f0;
+  font-size: 14px;
+}
+
+/* Checkbox styles */
+.checkbox {
+  font-size: 14px;
+}
+
+/* Container styles */
+.column {
+  gap: 8px;
+}
+
+.row {
+  gap: 8px;
+}
+
+/* Utility classes */
+.gap-1 { gap: 4px; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.gap-4 { gap: 16px; }
+.gap-6 { gap: 24px; }
+.gap-8 { gap: 32px; }
+
+.p-1 { padding: 4px; }
+.p-2 { padding: 8px; }
+.p-3 { padding: 12px; }
+.p-4 { padding: 16px; }
+.p-6 { padding: 24px; }
+.p-8 { padding: 32px; }
+
+/* Card styles */
+.card {
+  padding: 16px;
+  border-radius: 8px;
+  border-width: 1px;
+  border-color: #e2e8f0;
+}
