@@ -31,10 +31,10 @@
 //! struct CounterComponent {
 //!     #[state]
 //!     count: i32,
-//!     
+//!
 //!     #[prop(default = 1)]
 //!     step: i32,
-//!     
+//!
 //!     #[event]
 //!     on_change: EventEmitter<i32>,
 //! }
@@ -68,7 +68,7 @@ mod styleable;
 /// struct MyWidget {
 ///     #[base]
 ///     base: WidgetBase,
-///     
+///
 ///     label: String,
 ///     value: i32,
 /// }
@@ -114,10 +114,10 @@ pub fn derive_widget(input: TokenStream) -> TokenStream {
 /// struct Counter {
 ///     #[state]
 ///     count: i32,
-///     
+///
 ///     #[prop(default = 1)]
 ///     step: i32,
-///     
+///
 ///     #[event]
 ///     on_change: EventEmitter<i32>,
 /// }
@@ -220,10 +220,10 @@ pub fn component(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// struct MyComponent {
 ///     #[prop]
 ///     required_value: String,
-///     
+///
 ///     #[prop(default = 42)]
 ///     with_default: i32,
-///     
+///
 ///     #[prop(optional)]
 ///     maybe_value: Option<String>,
 /// }
@@ -265,7 +265,7 @@ pub fn state(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// struct Button {
 ///     #[event]
 ///     on_click: EventEmitter<()>,
-///     
+///
 ///     #[event]
 ///     on_value_change: EventEmitter<String>,
 /// }

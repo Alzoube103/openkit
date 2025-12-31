@@ -1,9 +1,16 @@
 //! Widget system for OpenKit.
 
+pub mod avatar;
 pub mod button;
+pub mod card;
 pub mod checkbox;
 pub mod container;
+pub mod dropdown;
+pub mod icon_button;
 pub mod label;
+pub mod password_field;
+pub mod spacer;
+pub mod spinner;
 pub mod textfield;
 
 use crate::css::{ClassList, ComputedStyle, StyleContext, WidgetState};

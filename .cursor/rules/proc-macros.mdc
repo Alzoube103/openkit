@@ -58,10 +58,10 @@ Generates Angular-like component infrastructure:
 struct Counter {
     #[state]
     count: i32,
-    
+
     #[prop]
     step: i32,
-    
+
     #[event]
     on_change: EventEmitter<i32>,
 }
@@ -108,16 +108,16 @@ pub fn derive_macro(input: TokenStream) -> TokenStream {
 
 fn impl_macro(input: DeriveInput) -> Result<TokenStream, Error> {
     let name = &input.ident;
-    
+
     // Parse attributes and fields
     // Generate code with quote!
-    
+
     let expanded = quote! {
         impl #name {
             // generated code
         }
     };
-    
+
     Ok(expanded)
 }
 ```
@@ -152,7 +152,7 @@ let named = match fields {
 for field in &named.named {
     let ident = field.ident.as_ref().unwrap();
     let ty = &field.ty;
-    
+
     // Check for attributes
     let has_attr = field.attrs.iter().any(|a| a.path().is_ident("my_attr"));
 }

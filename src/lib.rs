@@ -80,11 +80,18 @@ pub mod prelude {
 
     // Widget types
     pub use crate::widget::{Widget, WidgetId};
+    pub use crate::widget::avatar::{Avatar, AvatarSize, AvatarShape};
     pub use crate::widget::button::{Button, ButtonVariant};
-    pub use crate::widget::label::Label;
-    pub use crate::widget::textfield::TextField;
+    pub use crate::widget::card::{Card, CardVariant};
     pub use crate::widget::checkbox::Checkbox;
     pub use crate::widget::container::{Column, Row};
+    pub use crate::widget::dropdown::{Dropdown, DropdownOption};
+    pub use crate::widget::icon_button::{IconButton, IconButtonSize, IconButtonVariant};
+    pub use crate::widget::label::Label;
+    pub use crate::widget::password_field::PasswordField;
+    pub use crate::widget::spacer::Spacer;
+    pub use crate::widget::spinner::{Spinner, SpinnerSize};
+    pub use crate::widget::textfield::TextField;
 
     // Component system (Angular-like)
     pub use crate::component::{
@@ -110,7 +117,7 @@ pub mod prelude {
         define_component, ng_if, ng_for, ng_switch,
         bind, on, model,
     };
-    
+
     // Re-export proc macros when enabled
     #[cfg(feature = "macros")]
     pub use openkit_macros::{Widget, Component, Styleable, component, prop, state, event};
