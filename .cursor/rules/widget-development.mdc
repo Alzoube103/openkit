@@ -1,0 +1,140 @@
+---
+description: Widget development patterns and best practices
+globs: ["src/widget/**/*.rs"]
+---
+
+# Widget Development
+
+## Widget Trait Requirements
+
+All widgets must implement the `Widget` trait:
+
+```rust
+pub trait Widget {
+    fn id(&self) -> WidgetId;
+    fn type_name(&self) -> &'static str;
+    fn element_id(&self) -> Option<&str>;
+    fn classes(&self) -> &ClassList;
+    fn state(&self) -> WidgetState;
+    fn intrinsic_size(&self, ctx: &LayoutContext) -> Size;
+    fn layout(&mut self, constraints: Constraints, ctx: &LayoutContext) -> LayoutResult;
+    fn paint(&self, painter: &mut Painter, rect: Rect, ctx: &PaintContext);
+    fn handle_event(&mut self, event: &Event, ctx: &mut EventContext) -> EventResult;
+    fn bounds(&self) -> Rect;
+    fn set_bounds(&mut self, bounds: Rect);
+}
+```
+
+## Widget State Management
+
+Use `WidgetState` for tracking interactive states:
+
+```rust
+pub struct WidgetState {
+    pub hovered: bool,
+    pub pressed: bool,
+    pub focused: bool,
+    pub disabled: bool,
+    pub checked: bool,  // For checkboxes, toggles
+    pub first_child: bool,
+    pub last_child: bool,
+    pub nth_child: usize,
+}
+```
+
+## Event Handling Pattern
+
+```rust
+fn handle_event(&mut self, event: &Event, ctx: &mut EventContext) -> EventResult {
+    match event {
+        Event::Mouse(mouse) => {
+            let in_bounds = self.bounds().contains(mouse.position);
+            
+            match mouse.kind {
+                MouseEventKind::Enter | MouseEventKind::Move => {
+                    if in_bounds && !self.base.state.hovered {
+                        self.base.state.hovered = true;
+                        ctx.request_redraw();
+                    }
+                }
+                MouseEventKind::Down if in_bounds => {
+                    self.base.state.pressed = true;
+                    ctx.request_focus(self.base.id);
+                    ctx.request_redraw();
+                    return EventResult::Handled;
+                }
+                // ... handle other events
+                _ => {}
+            }
+        }
+        _ => {}
+    }
+    EventResult::Ignored
+}
+```
+
+## Painting Pattern
+
+```rust
+fn paint(&self, painter: &mut Painter, rect: Rect, ctx: &PaintContext) {
+    let theme = ctx.style_ctx.theme;
+    
+    // 1. Draw background
+    let bg_color = self.background_color(theme);
+    let radius = BorderRadius::all(theme.radii.md);
+    painter.fill_rounded_rect(rect, bg_color, radius);
+    
+    // 2. Draw border (if applicable)
+    if self.has_border() {
+        painter.stroke_rect(rect, theme.colors.border, 1.0);
+    }
+    
+    // 3. Draw content (text, icons, etc.)
+    painter.draw_text(&self.label, position, text_color, font_size);
+    
+    // 4. Draw focus ring (if focused)
+    if self.base.state.focused && ctx.focus_visible {
+        painter.stroke_rect(focus_rect, theme.colors.ring, 2.0);
+    }
+}
+```
+
+## CSS Class Support
+
+Always support CSS class assignment:
+
+```rust
+impl MyWidget {
+    pub fn class(mut self, class: &str) -> Self {
+        self.base.classes.add(class);
+        self
+    }
+    
+    pub fn id(mut self, id: &str) -> Self {
+        self.base.element_id = Some(id.to_string());
+        self
+    }
+}
+```
+
+## Container Widgets
+
+For widgets that contain children:
+
+```rust
+pub struct Container {
+    base: WidgetBase,
+    children: Vec<Box<dyn Widget>>,
+    gap: f32,
+}
+
+impl Widget for Container {
+    fn children(&self) -> &[Box<dyn Widget>] {
+        &self.children
+    }
+    
+    fn children_mut(&mut self) -> &mut [Box<dyn Widget>] {
+        &mut self.children
+    }
+}
+```

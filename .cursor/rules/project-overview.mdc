@@ -1,0 +1,56 @@
+---
+description: OpenKit project overview and architecture
+globs: ["**/*.rs", "**/*.css"]
+alwaysApply: true
+---
+
+# OpenKit Project Overview
+
+OpenKit is a cross-platform CSS-styled UI framework for Rust. It provides consistent, beautiful desktop applications across Windows, macOS, and Linux with CSS-powered styling and a Tailwind-inspired design system.
+
+## Core Architecture
+
+```
+Application Code
+       ↓
+Widget Tree (Rust)
+       ↓
+CSS Style Engine (Parser → Cascade → Computed → Layout)
+       ↓
+Flexbox/Grid Layout
+       ↓
+Render Layer (GPU via wgpu | Software via tiny-skia)
+       ↓
+Platform Window (Win32 | AppKit | GTK4/X11/Wayland)
+```
+
+## Key Principles
+
+1. **Consistent Styling**: Apps look identical on Windows, macOS, and Linux
+2. **CSS-Powered**: Style everything with familiar CSS syntax
+3. **Tailwind by Default**: Ship with Tailwind-inspired design tokens
+4. **GPU-First Rendering**: Custom-rendered widgets with GPU acceleration
+5. **Accessible by Default**: Proper accessibility semantics built-in
+6. **Zero JavaScript**: Pure Rust, no Electron, no WebView
+
+## Module Structure
+
+- `src/app.rs` - Application entry point and lifecycle
+- `src/css/` - CSS parsing, styling, and cascade engine
+- `src/widget/` - Widget implementations (Button, Label, TextField, etc.)
+- `src/layout/` - Flexbox layout engine
+- `src/render/` - GPU (wgpu) and CPU (tiny-skia) rendering backends
+- `src/platform/` - Platform abstraction (winit-based)
+- `src/theme/` - Tailwind-inspired theme system
+- `src/component.rs` - Angular-like component system
+- `src/macros.rs` - Declarative UI macros
+- `src/geometry.rs` - Point, Size, Rect, Color types
+- `src/event.rs` - Event types and handling
+
+## Dependencies
+
+- `winit` - Cross-platform windowing
+- `wgpu` - GPU rendering (optional, default)
+- `tiny-skia` - CPU rendering fallback
+- `cosmic-text` - Text rendering
+- `cssparser` - CSS parsing

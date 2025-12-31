@@ -1,0 +1,134 @@
+---
+description: Declarative UI macro patterns and usage
+globs: ["src/macros.rs", "examples/**/*.rs"]
+---
+
+# Declarative UI Macros
+
+OpenKit provides ergonomic macros for building UIs declaratively.
+
+## Layout Macros
+
+### `col!` - Vertical Column
+```rust
+col![gap;
+    child1,
+    child2,
+    child3,
+]
+
+// Example
+col![16;
+    label!("Title"),
+    button!("Click me", { println!("clicked"); }),
+]
+```
+
+### `row!` - Horizontal Row
+```rust
+row![gap;
+    child1,
+    child2,
+]
+
+// Example
+row![8;
+    button!("OK", { /* ... */ }),
+    button!("Cancel", Secondary, { /* ... */ }),
+]
+```
+
+## Widget Macros
+
+### `label!`
+```rust
+label!("Text content")
+```
+
+### `button!`
+```rust
+// Basic button with handler
+button!("Label", { println!("clicked"); })
+
+// With variant
+button!("Delete", Destructive, { /* ... */ })
+
+// Without handler
+button!("Disabled")
+```
+
+### `checkbox!`
+```rust
+checkbox!("Label", |checked| {
+    println!("Checked: {}", checked);
+})
+
+// With initial state
+checkbox!("Accept", true, |checked| { /* ... */ })
+```
+
+### `textfield!`
+```rust
+textfield!("Placeholder...", |value| {
+    println!("Value: {}", value);
+})
+```
+
+## Utility Macros
+
+### `spacer!` - Flexible space
+```rust
+row![8;
+    label!("Left"),
+    spacer!(),  // Pushes content to edges
+    label!("Right"),
+]
+```
+
+### `class!` - CSS class list
+```rust
+let classes = class!["btn", "primary", "large"];
+```
+
+### `style!` - Inline styles
+```rust
+let styles = style! {
+    padding: 16,
+    color: "blue"
+};
+```
+
+### `when!` - Conditional widget
+```rust
+when!(condition,
+    label!("Shown when true")
+)
+```
+
+### `for_each!` - List rendering
+```rust
+for_each!(items, |item| {
+    label!(item.name)
+})
+```
+
+## Adding CSS Classes to Widgets
+
+Use the `.class()` method after macro creation:
+
+```rust
+// Using builder method after macro
+Label::new("Styled Text").class("hero-text")
+
+Button::new("Custom Button")
+    .class("gradient-btn")
+    .on_click(|| println!("clicked"))
+```
+
+## Best Practices
+
+1. Use macros for quick prototyping and simple UIs
+2. Use builder pattern for complex widget configuration
+3. Prefer `col!` and `row!` over manual container creation
+4. Use `spacer!()` for flexible layouts
+5. Keep handler closures short; extract logic to functions

@@ -1,0 +1,159 @@
+---
+description: Angular-like component system patterns
+globs: ["src/component.rs", "examples/angular_style.rs"]
+---
+
+# Component System (Angular-like)
+
+OpenKit provides an Angular-inspired component system for building reusable UI components.
+
+## Defining Components
+
+Use `define_component!` macro:
+
+```rust
+define_component!(
+    CounterComponent,
+    // State
+    {
+        count: State<i32>,
+    },
+    // Props
+    {
+        initial_value: i32,
+        step: i32,
+    },
+    // Events
+    {
+        on_change: EventEmitter<i32>,
+    },
+    // Render
+    |ctx| {
+        let count = ctx.state.count.get();
+        col![8;
+            label!(format!("Count: {}", count)),
+            row![4;
+                button!("-", {
+                    let new_val = count - ctx.props.step;
+                    ctx.state.count.set(new_val);
+                    ctx.events.on_change.emit(new_val);
+                }),
+                button!("+", {
+                    let new_val = count + ctx.props.step;
+                    ctx.state.count.set(new_val);
+                    ctx.events.on_change.emit(new_val);
+                }),
+            ]
+        ]
+    }
+);
+```
+
+## State Management
+
+### `State<T>` - Reactive state
+```rust
+let count: State<i32> = State::new(0);
+
+// Get value
+let value = count.get();
+
+// Set value (triggers re-render)
+count.set(42);
+
+// Update with function
+count.update(|v| v + 1);
+```
+
+### `Model<T>` - Two-way binding
+```rust
+let name: Model<String> = Model::new(String::new());
+
+// Bind to text field
+textfield!("Name", model!(name))
+```
+
+## Event Emitters
+
+```rust
+let on_submit: EventEmitter<String> = EventEmitter::new();
+
+// Emit event
+on_submit.emit("submitted value".to_string());
+
+// Subscribe to events
+on_submit.subscribe(|value| {
+    println!("Received: {}", value);
+});
+```
+
+## Lifecycle Hooks
+
+Components support lifecycle hooks:
+
+```rust
+impl Lifecycle for MyComponent {
+    fn on_init(&mut self, ctx: &mut ComponentContext) {
+        // Called when component initializes
+    }
+    
+    fn on_changes(&mut self, changes: &Changes) {
+        // Called when props change
+    }
+    
+    fn on_render(&mut self, ctx: &mut ComponentContext) {
+        // Called after each render
+    }
+    
+    fn on_destroy(&mut self) {
+        // Called when component is removed
+    }
+}
+```
+
+## Structural Directives
+
+### `ng_if!` - Conditional rendering
+```rust
+ng_if!(show_message,
+    label!("This is shown conditionally")
+)
+```
+
+### `ng_for!` - List rendering
+```rust
+ng_for!(items, |item, index| {
+    label!(format!("{}: {}", index, item.name))
+})
+```
+
+### `ng_switch!` - Switch rendering
+```rust
+ng_switch!(status,
+    "loading" => label!("Loading..."),
+    "error" => label!("Error occurred"),
+    "success" => label!("Success!"),
+    _ => label!("Unknown state")
+)
+```
+
+## Using Components
+
+```rust
+ComponentBuilder::new(CounterComponent::default())
+    .prop("initial_value", 10)
+    .prop("step", 5)
+    .on("on_change", |value: i32| {
+        println!("Counter changed to: {}", value);
+    })
+    .build()
+```
+
+## Best Practices
+
+1. Keep components focused on a single responsibility
+2. Use `State<T>` for internal component state
+3. Use props for configuration passed from parent
+4. Use events to communicate changes to parent
+5. Implement lifecycle hooks only when needed
+6. Prefer composition over inheritance

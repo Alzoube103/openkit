@@ -1,0 +1,110 @@
+---
+description: CSS styling system and conventions
+globs: ["src/css/**/*.rs", "**/*.css"]
+---
+
+# CSS Styling System
+
+## Supported CSS Features
+
+### Selectors
+- Type selectors: `button`, `label`
+- Class selectors: `.btn-primary`
+- ID selectors: `#my-widget`
+- Pseudo-classes: `:hover`, `:active`, `:focus`, `:disabled`, `:checked`
+- Universal selector: `*`
+
+### Properties (Current Support)
+- `background-color`
+- `color`
+- `padding` (all sides or individual)
+- `margin`
+- `border-width`, `border-color`, `border-radius`
+- `font-size`, `font-weight`
+- `width`, `height`, `min-width`, `max-width`
+- `gap` (for flex containers)
+- `flex-direction`, `justify-content`, `align-items`
+
+### Units
+- `px` - Pixels
+- `rem` - Root em (relative to base font size)
+- `em` - Em (relative to parent font size)
+- `%` - Percentage
+- `vw`, `vh` - Viewport units
+
+## Theme System
+
+The theme provides CSS variables (design tokens):
+
+```css
+:root {
+  /* Colors */
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --destructive: #ef4444;
+  --border: #e2e8f0;
+  --ring: #3b82f6;
+  
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-4: 1rem;
+  
+  /* Typography */
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  
+  /* Radii */
+  --radius-sm: 0.125rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+}
+```
+
+## Loading Custom CSS
+
+Use `StyleManager` to load custom CSS:
+
+```rust
+use openkit::css::StyleManager;
+
+let mut styles = StyleManager::new();
+
+// Load from file
+styles.load_file("./custom.css")?;
+
+// Load from string
+styles.load_css(r#"
+    .my-button {
+        background-color: #3b82f6;
+        border-radius: 8px;
+    }
+"#)?;
+
+// Set CSS variables
+styles.set_variable("--primary", "#8b5cf6");
+
+// Use in app
+App::new()
+    .styles(styles)
+    .run(|| { /* ... */ });
+```
+
+## Adding CSS Parser Support
+
+When adding new CSS properties:
+
+1. Add to `StyleProperty` enum in `src/css/properties.rs`
+2. Add parsing logic in `src/css/parser.rs`
+3. Add application logic in `ComputedStyle::apply()`
+4. Update widget paint methods to use the property
+
+## Default Styles
+
+Framework default styles are in `src/css/default.css`. Keep this file simple with basic class definitions. Complex features like `:root` variables are handled programmatically by the theme system.

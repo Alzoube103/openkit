@@ -1,0 +1,87 @@
+---
+description: Rust coding conventions for OpenKit
+globs: ["**/*.rs"]
+alwaysApply: true
+---
+
+# Rust Coding Conventions
+
+## General Style
+
+- Use Rust 2021 edition
+- Follow standard Rust naming conventions (snake_case for functions/variables, PascalCase for types)
+- Prefer `impl Into<T>` for string parameters: `fn new(label: impl Into<String>)`
+- Use builder pattern for widget construction with method chaining
+- Prefer `#[derive]` for common traits: Debug, Clone, Default, PartialEq
+
+## Error Handling
+
+- Use `thiserror` for custom error types
+- Prefer `Result<T, E>` over panics in library code
+- Use `log` crate for logging (warn, error, info, debug)
+- Initialize logger with `env_logger::init()` in app entry
+
+## Widget Implementation Pattern
+
+Every widget should:
+1. Have a `WidgetBase` field for common properties
+2. Implement the `Widget` trait
+3. Provide builder methods that return `Self`
+4. Support CSS class assignment via `.class()` method
+
+```rust
+pub struct MyWidget {
+    base: WidgetBase,
+    // widget-specific fields
+}
+
+impl MyWidget {
+    pub fn new() -> Self {
+        Self {
+            base: WidgetBase::new().with_class("my-widget"),
+        }
+    }
+
+    pub fn class(mut self, class: &str) -> Self {
+        self.base.classes.add(class);
+        self
+    }
+}
+
+impl Widget for MyWidget {
+    fn id(&self) -> WidgetId { self.base.id }
+    fn type_name(&self) -> &'static str { "my-widget" }
+    fn classes(&self) -> &ClassList { &self.base.classes }
+    // ... implement other required methods
+}
+```
+
+## Testing
+
+- Use Vitest for any TypeScript/JavaScript (per user preference)
+- Use `#[cfg(test)]` module for Rust tests
+- Use `pretty_assertions` for better test diffs
+- Mark doc examples with `rust,ignore` if they require runtime
+
+## Imports
+
+Organize imports in this order:
+1. Standard library (`std::`)
+2. External crates
+3. Crate modules (`crate::`)
+4. Super/self imports
+
+```rust
+use std::collections::HashMap;
+
+use wgpu::Instance;
+
+use crate::css::StyleContext;
+use crate::widget::Widget;
+```
+
+## Documentation
+
+- Add doc comments (`///`) to all public items
+- Include examples in doc comments where helpful
+- Use `//!` for module-level documentation

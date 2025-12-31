@@ -1,0 +1,149 @@
+---
+description: Testing conventions and patterns
+globs: ["**/*.rs", "**/*.ts", "**/*.js"]
+---
+
+# Testing Conventions
+
+## Rust Testing
+
+### Unit Tests
+Place unit tests in a `#[cfg(test)]` module at the bottom of each file:
+
+```rust
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_widget_creation() {
+        let btn = Button::new("Test");
+        assert_eq!(btn.type_name(), "button");
+    }
+
+    #[test]
+    fn test_css_parsing() {
+        let result = CssParser::parse_stylesheet(".test { color: red; }");
+        assert!(result.is_ok());
+    }
+}
+```
+
+### Integration Tests
+Place integration tests in `tests/` directory:
+
+```
+tests/
+├── css_integration.rs
+├── layout_integration.rs
+└── widget_integration.rs
+```
+
+### Doc Tests
+Add testable examples to documentation:
+
+```rust
+/// Creates a new button widget.
+///
+/// # Examples
+///
+/// ```rust
+/// use openkit::prelude::*;
+///
+/// let button = Button::new("Click me")
+///     .class("primary")
+///     .on_click(|| println!("clicked"));
+/// ```
+pub fn new(label: impl Into<String>) -> Self {
+    // ...
+}
+```
+
+Mark examples that need runtime with `ignore`:
+
+```rust
+/// ```rust,ignore
+/// App::new().run(|| { /* ... */ });
+/// ```
+```
+
+## TypeScript/JavaScript Testing
+
+Use **Vitest** for all TypeScript/JavaScript tests (per user preference):
+
+```typescript
+import { describe, it, expect } from 'vitest';
+
+describe('Component', () => {
+    it('should render correctly', () => {
+        // test implementation
+    });
+});
+```
+
+## Test Organization
+
+```
+src/
+├── css/
+│   ├── mod.rs
+│   ├── parser.rs      # Unit tests at bottom
+│   └── selector.rs    # Unit tests at bottom
+├── widget/
+│   └── button.rs      # Unit tests at bottom
+tests/
+├── css_integration.rs
+└── widget_integration.rs
+```
+
+## Running Tests
+
+```bash
+# Run all tests
+cargo test
+
+# Run specific test module
+cargo test css::parser
+
+# Run with output
+cargo test -- --nocapture
+
+# Run ignored tests
+cargo test -- --ignored
+```
+
+## Test Fixtures
+
+For CSS testing, use inline CSS strings:
+
+```rust
+#[test]
+fn test_css_cascade() {
+    let css = r#"
+        .base { color: red; }
+        .override { color: blue; }
+    "#;
+    
+    let sheet = CssParser::parse_stylesheet(css).unwrap();
+    // assertions...
+}
+```
+
+## Assertions
+
+Use `pretty_assertions` for better diff output:
+
+```rust
+use pretty_assertions::{assert_eq, assert_ne};
+
+#[test]
+fn test_computed_style() {
+    let expected = ComputedStyle {
+        color: Color::RED,
+        // ...
+    };
+    let actual = compute_style(&widget, &ctx);
+    assert_eq!(actual, expected);
+}
+```
