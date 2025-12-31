@@ -136,7 +136,7 @@ impl Widget for Spinner {
     fn paint(&self, painter: &mut Painter, rect: Rect, ctx: &PaintContext) {
         let theme = ctx.style_ctx.theme;
         let color = self.color.unwrap_or(theme.colors.primary);
-        
+
         let size = self.size.pixels();
         let stroke = self.size.stroke_width();
         let center_x = rect.x() + rect.width() / 2.0;
@@ -145,27 +145,27 @@ impl Widget for Spinner {
 
         // Draw background circle (track)
         let track_color = color.with_alpha(0.2);
-        
+
         // Draw a simple circular representation
         // In a real implementation, we'd draw proper arcs
         // For now, we'll draw a simplified version with multiple segments
-        
+
         let segments = 12;
         for i in 0..segments {
             let angle = (i as f32) * (std::f32::consts::PI * 2.0 / segments as f32);
             let x = center_x + angle.cos() * radius;
             let y = center_y + angle.sin() * radius;
-            
+
             // Fade segments to create spinner effect
             let alpha = ((i as f32 / segments as f32) * 0.8 + 0.2).min(1.0);
             let segment_color = color.with_alpha(alpha);
-            
+
             painter.fill_rect(
                 Rect::new(x - stroke / 2.0, y - stroke / 2.0, stroke, stroke),
                 segment_color,
             );
         }
-        
+
         // Draw a simple loading indicator using text (temporary)
         // This will be replaced with proper arc rendering
         painter.draw_text(

@@ -81,6 +81,7 @@ pub mod prelude {
     // Widget types
     pub use crate::widget::{Widget, WidgetId};
     pub use crate::widget::avatar::{Avatar, AvatarSize, AvatarShape};
+    pub use crate::widget::bar::{Bar, BarPosition, BarVariant};
     pub use crate::widget::button::{Button, ButtonVariant};
     pub use crate::widget::card::{Card, CardVariant};
     pub use crate::widget::checkbox::Checkbox;

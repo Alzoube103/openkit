@@ -247,7 +247,7 @@ impl Widget for IconButton {
         let icon_size = self.size.icon_size();
         let icon_x = rect.x() + (rect.width() - icon_size * 0.6) / 2.0;
         let icon_y = rect.y() + (rect.height() + icon_size * 0.8) / 2.0;
-        
+
         painter.draw_text(
             &self.icon,
             Point::new(icon_x, icon_y),

@@ -162,7 +162,7 @@ impl Dropdown {
         let found = self.options.iter()
             .find(|o| o.value == value && !o.disabled)
             .map(|o| o.value.clone());
-        
+
         if let Some(selected_value) = found {
             self.selected_value = Some(selected_value.clone());
             self.close();
@@ -264,7 +264,7 @@ impl Widget for Dropdown {
         // Chevron icon
         let chevron_x = rect.x() + rect.width() - 24.0;
         let chevron_y = rect.y() + rect.height() / 2.0;
-        
+
         // Draw simple chevron (▼ or ▲)
         let chevron = if self.is_open { "▲" } else { "▼" };
         painter.draw_text(

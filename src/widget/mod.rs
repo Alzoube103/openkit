@@ -1,6 +1,7 @@
 //! Widget system for OpenKit.
 
 pub mod avatar;
+pub mod bar;
 pub mod button;
 pub mod card;
 pub mod checkbox;

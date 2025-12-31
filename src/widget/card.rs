@@ -175,7 +175,7 @@ impl Widget for Card {
 
         let child_size = if let Some(child) = &mut self.child {
             let result = child.layout(child_constraints, ctx);
-            
+
             // Position child with padding offset
             child.set_bounds(Rect::new(
                 self.base.bounds.x() + self.padding.left,
@@ -183,7 +183,7 @@ impl Widget for Card {
                 result.size.width,
                 result.size.height,
             ));
-            
+
             result.size
         } else {
             Size::ZERO
@@ -193,7 +193,7 @@ impl Widget for Card {
             child_size.width + self.padding.left + self.padding.right,
             child_size.height + self.padding.top + self.padding.bottom,
         );
-        
+
         let size = constraints.constrain(size);
         self.base.bounds.size = size;
         LayoutResult::new(size)
@@ -256,7 +256,7 @@ impl Widget for Card {
 
     fn set_bounds(&mut self, bounds: Rect) {
         self.base.bounds = bounds;
-        
+
         // Update child bounds
         if let Some(child) = &mut self.child {
             child.set_bounds(Rect::new(

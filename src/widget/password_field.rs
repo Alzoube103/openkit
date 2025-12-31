@@ -309,14 +309,14 @@ impl Widget for PasswordField {
         if self.show_toggle {
             let toggle_x = rect.x() + rect.width() - toggle_width - 4.0;
             let toggle_y = rect.y() + (rect.height() - 16.0) / 2.0;
-            
+
             // Draw eye icon (simplified)
             let icon_color = if self.is_revealed {
                 theme.colors.primary
             } else {
                 theme.colors.muted_foreground
             };
-            
+
             // Simple eye shape
             painter.fill_rect(
                 Rect::new(toggle_x + 4.0, toggle_y + 6.0, 16.0, 4.0),
